@@ -1,4 +1,3 @@
-
 /*
  * Integrantes de grupo:
  * Andres Felipe Castro Cardona
@@ -7,6 +6,7 @@
 import java.util.Scanner;
 
 public class Ejercicio1 {
+
     public void execEjercicio1() {
         System.out.println("Ejercicio 4.1: Matriz en espiral");
         Scanner scanner = new Scanner(System.in);
@@ -20,16 +20,15 @@ public class Ejercicio1 {
                 if (n > 0) {
                     validInput = true;
                 } else {
-                    System.out.println("Por favor, ingrese un numero entero positivo.");
+                    System.out.println("Por favor, ingrese un número entero positivo.");
                 }
             } else {
-                System.out.println("Por favor, ingrese un numero entero valido.");
+                System.out.println("Por favor, ingrese un número entero válido.");
                 scanner.next(); // Limpiar el buffer del scanner
             }
         }
 
         // se crean las matrices con las dimensiones que nos dio el usuario
-
         int[][] matrix1 = new int[n][n];
         int[][] matrix2 = new int[n][n];
 
@@ -45,8 +44,18 @@ public class Ejercicio1 {
         printMatrix(matrix1);
         System.out.println("La ejecucion del algoritmo iterativo tardo " + duration + " nanosegundos.");
 
+        //Se instancian las variables para pasarle al metodo recursivo
+        int sum = 1;
+        char flag = 's'; //para que comience a iterar hacia abajo
+        int i = 0;
+        int j = 0;
+        int startRow = 0;
+        int startCol = 0;
+        int endRow = matrix2.length - 1;
+        int endCol = matrix2[0].length - 1;
+
         startTime = System.nanoTime();
-        getMatrixRec(matrix2, 0, n - 1, 0, n - 1, 1);
+        matrix2 = getMatrixRec(matrix2, i, j, startRow, startCol, endRow, endCol, sum, flag);
         endTime = System.nanoTime();
         duration = endTime - startTime;
         printMatrix(matrix2);
@@ -56,7 +65,6 @@ public class Ejercicio1 {
 
     // Metodo iterativo
     private void getMatrixIt(int[][] matrix) {
-
         int num = 1;
         int leftColumn = 0, rightColumn = matrix.length - 1;
         int topRow = 0, bottomRow = matrix.length - 1;
@@ -65,58 +73,75 @@ public class Ejercicio1 {
 
         while (num <= totalElements) {
             // Llenar de arriba hacia abajo en la primera columna
-            for (int i = topRow; i <= bottomRow; i++)
+            for (int i = topRow; i <= bottomRow; i++) {
                 matrix[i][leftColumn] = num++;
+            }
             leftColumn++;
 
             // Llenar de izquierda a derecha en la última fila
-            for (int i = leftColumn; i <= rightColumn; i++)
+            for (int i = leftColumn; i <= rightColumn; i++) {
                 matrix[bottomRow][i] = num++;
+            }
             bottomRow--;
 
             // Llenar de abajo hacia arriba en la última columna
-            for (int i = bottomRow; i >= topRow; i--)
+            for (int i = bottomRow; i >= topRow; i--) {
                 matrix[i][rightColumn] = num++;
+            }
             rightColumn--;
 
             // Llenar de derecha a izquierda en la primera fila
-            for (int i = rightColumn; i >= leftColumn; i--)
+            for (int i = rightColumn; i >= leftColumn; i--) {
                 matrix[topRow][i] = num++;
+            }
             topRow++;
         }
 
     }
 
     // Metodo recursivo
-    private void getMatrixRec(int[][] matrix, int startRow, int endRow, int startCol, int endCol, int num) {
+    private int[][] getMatrixRec(int[][] matrix, int i, int j, int startRow, int startCol, int endRow, int endCol, int sum, char flag) {
         // Caso base: cuando la matriz se reduce a una sola fila o columna
-        if (startRow > endRow || startCol > endCol) {
+        if (sum > matrix.length * matrix[0].length) {
+            return matrix;
+        }
+        // instancia el valor de incrementa en la posicion de la matriz
+        matrix[i][j] = sum;
 
-            return;
+        //valida extremos de la matriz para cambiar el sentido del recorrido
+        //Cambia el sentido de arriba a abajo a izquierda a derecha y disminuye la matriz por la izquierda
+        if (i == endRow && flag == 's') {
+            flag = 'e';
+            startCol++;
+        }
+        //Cambia el sentido de izquierda a derecha a abajo a arriba y disminuye la matriz por abajo
+        if (j == endCol && flag == 'e') {
+            flag = 'n';
+            endRow--;
+        }
+        //Cambia el sentido de abajo a arriba a derecha a izquierda y disminuye la matriz por la derecha
+        if (i == startRow && flag == 'n') {
+            flag = 'o';
+            endCol--;
+        }
+        //Cambia el sentido de izquierda a derecha de abajo hacia arriba y disminuye la matriz por arriba
+        if (j == startCol && flag == 'o') {
+            flag = 's';
+            startRow++;
         }
 
-        // Llenar de arriba hacia abajo en la columna izquierda
-        for (int i = startRow; i <= endRow; i++) {
-            matrix[i][startCol] = num++;
-        }
+        // case que de acuerdo al sentido (flag) comienza a iterar
+        switch (flag) {
+            case 's':
+                return getMatrixRec(matrix, i + 1, j, startRow, startCol, endRow, endCol, sum + 1, flag);
 
-        // Llenar de izquierda a derecha en la fila inferior
-        for (int i = startCol + 1; i <= endCol; i++) {
-            matrix[endRow][i] = num++;
+            case 'e':
+                return getMatrixRec(matrix, i, j + 1, startRow, startCol, endRow, endCol, sum + 1, flag);
+            case 'n':
+                return getMatrixRec(matrix, i - 1, j, startRow, startCol, endRow, endCol, sum + 1, flag);
+            default:
+                return getMatrixRec(matrix, i, j - 1, startRow, startCol, endRow, endCol, sum + 1, flag);
         }
-
-        // Llenar de abajo hacia arriba en la columna derecha
-        for (int i = endRow - 1; i >= startRow; i--) {
-            matrix[i][endCol] = num++;
-        }
-
-        // Llenar de derecha a izquierda en la fila superior
-        for (int i = endCol - 1; i >= startCol + 1; i--) {
-            matrix[startRow][i] = num++;
-        }
-
-        // Llamada recursiva con una matriz de tamaño reducido
-        getMatrixRec(matrix, startRow + 1, endRow - 1, startCol + 1, endCol - 1, num);
     }
 
     // Imprime la matriz
