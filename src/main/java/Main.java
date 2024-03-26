@@ -3,7 +3,7 @@
  * Integrantes de grupo:
  * Andres Felipe Castro Cardona
  * Andres Felipe Garcia
- * Brayan Sriven Valencia Villa
+ * Brayan Stiven Valencia Villa
  */
 import java.util.Scanner;
 
