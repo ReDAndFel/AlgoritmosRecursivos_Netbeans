@@ -1,8 +1,8 @@
-
 /*
  * Integrantes de grupo:
  * Andres Felipe Castro Cardona
  * Andres Felipe Garcia
+ * Brayan Sriven Valencia Villa
  */
 public class Ejercicio4 {
 
